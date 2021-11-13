@@ -6,6 +6,7 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     private Rigidbody m_Rigidbody;
+    public float maxSpeed = 10.0f;
 
     void Start()
     {
@@ -26,9 +27,9 @@ public class Ball : MonoBehaviour
         }
 
         //max velocity
-        if (velocity.magnitude > 3.0f)
+        if (velocity.magnitude > maxSpeed)
         {
-            velocity = velocity.normalized * 3.0f;
+            velocity = velocity.normalized * maxSpeed;
         }
 
         m_Rigidbody.velocity = velocity;

@@ -10,20 +10,23 @@ public class MainManager : MonoBehaviour
 {
     public Brick BrickPrefab;
     int[] pointCountArray = new [] {1,1,2,2,5,5};
+    [Range(1, 6)]
     public int LineCount = 1; //6;
+    [Range(1, 6)]
     public int PerLineCount = 1; //8;
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text HighText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    // private int m_Points;
     
     private bool m_GameOver = false;
     private bool m_isWin = false;
 
-    public float m_StartForece = 2.0f;
+    public float m_StartForece = 1.0f;
     public int m_MaxCountBall = 0;
     public int m_LeftBall = 0;
 
@@ -31,9 +34,11 @@ public class MainManager : MonoBehaviour
     const string m_strGameOver = @"GAME OVER
     Press Space to Restart";
     const string m_strGameFinish = @"CONGRATULATIONS!
+
     Press Space to Start New Level";
 
-    private const string m_strScore = "Score : {0}, Left : {1}";
+    private const string m_strScore = "Level : {0}, Score : {1}, Left : {2}";
+    private const string m_strHighScore = "HighLevel : {0}, HighScore : {1}, TotalScore : {2}";
 
     
     // Start is called before the first frame update
@@ -48,8 +53,8 @@ public class MainManager : MonoBehaviour
 
         m_MaxCountBall = PerLineCount * LineCount;
         m_LeftBall = m_MaxCountBall;
-        
-        ScoreText.text = string.Format(m_strScore, m_Points, m_LeftBall);
+
+        UpdateScore();
         
         for (int i = 0; i < LineCount; ++i)
         {
@@ -87,11 +92,20 @@ public class MainManager : MonoBehaviour
         }
     }
 
+    private void UpdateScore()
+    {
+        var runtimeScore = PersistentData.Instance.runtimeData;
+        ScoreText.text = string.Format(m_strScore, runtimeScore.curLevel, runtimeScore.curScore, m_LeftBall);
+        var highScore = PersistentData.Instance.data;
+        HighText.text = string.Format(m_strHighScore, highScore.highLevel, highScore.highScore, highScore.totalScore);
+    }
+
     void AddPoint(int point)
     {
-        m_Points += point;
+        var points = PersistentData.Instance.AddScore(point);
         m_LeftBall--;
-        ScoreText.text = string.Format(m_strScore, m_Points, m_LeftBall);
+
+        UpdateScore();
 
         if (m_LeftBall == 0)
         {
@@ -106,6 +120,10 @@ public class MainManager : MonoBehaviour
         GameOverText.GetComponent<Text>().text = m_isWin ? m_strGameFinish : m_strGameOver;
         GameOverText.SetActive(true);
 
+        PersistentData.Instance.GameOver(isWin);
+        
+        PersistentData.Instance.SaveData();
+
         StartCoroutine(PauseGame());
     }
 
@@ -117,5 +135,11 @@ public class MainManager : MonoBehaviour
         Time.timeScale = 0f;
         
         yield return null;
+    }
+
+    public void ClearScore()
+    {
+        PersistentData.Instance.ClearScore();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

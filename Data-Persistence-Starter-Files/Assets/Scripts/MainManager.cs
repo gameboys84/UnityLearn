@@ -120,8 +120,8 @@ public class MainManager : MonoBehaviour
         GameOverText.GetComponent<Text>().text = m_isWin ? m_strGameFinish : m_strGameOver;
         GameOverText.SetActive(true);
 
+        SoundManager.PlaySound(isWin ? SoundClip.GameWin : SoundClip.GameLose);
         PersistentData.Instance.GameOver(isWin);
-        
         PersistentData.Instance.SaveData();
 
         StartCoroutine(PauseGame());

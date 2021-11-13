@@ -15,6 +15,23 @@ public class Ball : MonoBehaviour
     }
 
     private int hit = 0;
+
+    private void OnCollisionEnter(Collision other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "Wall":
+                SoundManager.PlaySound(SoundClip.HitWall);
+                break;
+            case "Brick":
+                SoundManager.PlaySound(SoundClip.HitBrick);
+                break;
+            case "Player":
+                SoundManager.PlaySound(SoundClip.HitPadel);
+                break;
+        }
+    }
+
     private void OnCollisionExit(Collision other)
     {
         var velocity = m_Rigidbody.velocity;

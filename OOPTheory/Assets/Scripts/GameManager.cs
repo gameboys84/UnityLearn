@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -19,5 +20,19 @@ public class GameManager : MonoBehaviour
     private void Print(string text)
     {
         Debug.Log(text);
+    }
+
+
+    private int page = 1;
+    public void OnPrev()
+    {
+        page--;
+        page = page == 0 ? 3 : page;
+    }
+    
+    public void OnNext()
+    {
+        page++;
+        page = page > 3 ? page - 3 : page;
     }
 }
